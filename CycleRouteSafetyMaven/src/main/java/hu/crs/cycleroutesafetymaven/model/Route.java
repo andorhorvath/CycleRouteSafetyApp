@@ -25,7 +25,7 @@ public class Route {
      * Default constructor.
      */
     public Route() {
-        this(null, null, null, null, null, null);
+        this("", "", "", "", 0, null);
     }
 
     /**
