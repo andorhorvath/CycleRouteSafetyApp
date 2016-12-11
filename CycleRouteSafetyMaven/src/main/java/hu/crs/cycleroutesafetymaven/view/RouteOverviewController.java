@@ -6,9 +6,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import hu.crs.cycleroutesafetymaven.MainApp;
 import hu.crs.cycleroutesafetymaven.model.Route;
-import hu.crs.cycleroutesafetymaven.utils.DateUtil;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import javafx.scene.control.Button;
 
 public class RouteOverviewController {
@@ -84,7 +83,12 @@ public class RouteOverviewController {
             lengthLabel.setText(Integer.toString(route.getLength()));
             finishLabel.setText(route.getFinish());
 
-            lastUpdateTimeLabel.setText(DateUtil.format(route.getLastUpdateTime()));
+//DateUtil-el            lastUpdateTimeLabel.setText(DateUtil.format(route.getLastUpdateTime()));
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            route.getLastUpdateTime();
+            String displayablelastUpdateTime = df.format(route.getLastUpdateTime());
+            lastUpdateTimeLabel.setText(displayablelastUpdateTime);
+
             deleteButton.setDisable(false);
             editButton.setDisable(false);
             

@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <name>CycleRouteSafetyMaven</name>
-
+   
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>hu.crs.cycleroutesafetymaven.MainApp</mainClass>
@@ -104,5 +104,11 @@
             </plugin>
         </plugins>
     </build>
-
+    <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>6.0.5</version>
+        </dependency>
+    </dependencies>
 </project>

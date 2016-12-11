@@ -6,9 +6,13 @@ package hu.crs.cycleroutesafetymaven;
 import static javafx.application.Application.launch;
 
 import hu.crs.cycleroutesafetymaven.model.Route;
+import hu.crs.cycleroutesafetymaven.model.RouteDataAccessor;
 import hu.crs.cycleroutesafetymaven.view.RouteEditDialogController;
 import hu.crs.cycleroutesafetymaven.view.RouteOverviewController;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,7 +22,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-//DELETABLE     import javafx.scene.Parent;
 
 
 public class MainApp extends Application {
@@ -30,17 +33,13 @@ public class MainApp extends Application {
      * The data as an observable list of Routes.
      */
     private final ObservableList<Route> routeData = FXCollections.observableArrayList();
-
+    private RouteDataAccessor dataAccessor;
     /**
      * Constructor
      */
     public MainApp() {
-        // Add some sample data
-        routeData.add(new Route("munkába", "ahorvath"));
-        routeData.add(new Route("munkából", "ahorvath"));
-        routeData.add(new Route("rendelőbe", "kfoldi"));
-        routeData.add(new Route("Renihez", "kfoldi"));
-
+//REMOVABLE            // Add some sample data
+//REMOVABLE            routeData.add(new Route("munkába", "ahorvath"));
     }
 
     /**
@@ -52,29 +51,43 @@ public class MainApp extends Application {
     }
     
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws SQLException, ClassNotFoundException {
+        //TODO: ask into the DB w the user that is accessing the APP after login ofc...
+        dataAccessor = new RouteDataAccessor("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/cycleroutes?zeroDateTimeBehavior=convertToNull", "ahorvath", "A\"brakadabra87");
+        try {
+            
+            routeData.addAll(dataAccessor.getRouteList());
+        } catch (SQLException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("SQL exception...");
+        }
+/*
+REMOVABLE        TableView<Route> personTable = new TableView<>();
+REMOVABLE        TableColumn<Person, String> firstNameCol = new TableColumn<>("First Name");
+REMOVABLE        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+REMOVABLE        TableColumn<Person, String> lastNameCol = new TableColumn<>("Last Name");
+REMOVABLE        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+REMOVABLE        TableColumn<Person, String> emailCol = new TableColumn<>("Email");
+REMOVABLE        emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
+REMOVABLE
+REMOVABLE        personTable.getColumns().addAll(firstNameCol, lastNameCol, emailCol);
+REMOVABLE
+REMOVABLE        personTable.getItems().addAll(dataAccessor.getPersonList());
+REMOVABLE*/  
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("CycleRouteSafetyApp");
 
         initRootLayout();
-
         showRouteOverview();
     }
     
-    /*TEMPLATE-TEMPLATE-TEMPLATE
     @Override
-    public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
-        
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
-        
-        stage.setTitle("JavaFX and Maven");
-        stage.setScene(scene);
-        stage.show();
+    public void stop() throws Exception {
+        if (dataAccessor != null) {
+            dataAccessor.shutdown();
+        }
     }
-    */
-    
+
     
     /**
      * Initializes the root layout.

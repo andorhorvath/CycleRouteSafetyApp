@@ -11,7 +11,9 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import hu.crs.cycleroutesafetymaven.model.Route;
-import hu.crs.cycleroutesafetymaven.utils.DateUtil;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -67,8 +69,10 @@ public class RouteEditDialogController {
         finishField.setText(route.getFinish());
         lengthField.setText(Integer.toString(route.getLength()));
         
-        lastUpdateTimeField.setText(DateUtil.format(route.getLastUpdateTime()));
-        lastUpdateTimeField.setPromptText("yyyy.mm.dd");
+//DateUtil-el        lastUpdateTimeField.setText(DateUtil.format(route.getLastUpdateTime()));
+//DateUtil-el        lastUpdateTimeField.setPromptText("yyyy.mm.dd");
+
+    
     }
 
     /**
@@ -91,7 +95,11 @@ public class RouteEditDialogController {
             route.setStart(startField.getText());
             route.setFinish(finishField.getText());
             route.setLength(Integer.parseInt(lengthField.getText()));
-            route.setLastUpdateTime(DateUtil.parse(lastUpdateTimeField.getText()));
+            
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date now = new Date();
+            System.out.println(df.format(now));
+            route.setLastUpdateTime(now);
 
             okClicked = true;
             dialogStage.close();
@@ -139,13 +147,13 @@ public class RouteEditDialogController {
             errorMessage += "No valid finish location!\n"; 
         }
 
-        if (lastUpdateTimeField.getText() == null || lastUpdateTimeField.getText().length() == 0) {
-            errorMessage += "No valid ...!\n";
-        } else {
-            if (!DateUtil.validDate(lastUpdateTimeField.getText())) {
-                errorMessage += "No valid lastUpdateTimeField. Use the format yyyy.mm.dd!\n";
-            }
-        }
+//REMOVABLE        if (lastUpdateTimeField.getText() == null || lastUpdateTimeField.getText().length() == 0) {
+//REMOVABLE            errorMessage += "No valid ...!\n";
+//REMOVABLE        } else {
+//REMOVABLE            if (!DateUtil.validDate(lastUpdateTimeField.getText())) {
+//REMOVABLE                errorMessage += "No valid lastUpdateTimeField. Use the format yyyy-mm-dd!\n";
+//REMOVABLE            }
+//REMOVABLE        }
 
         if (errorMessage.length() == 0) {
             return true;

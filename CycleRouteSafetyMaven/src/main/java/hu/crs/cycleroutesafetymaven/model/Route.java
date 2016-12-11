@@ -1,6 +1,6 @@
 package hu.crs.cycleroutesafetymaven.model;
 
-import java.time.LocalDate;
+import java.util.Date;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -20,12 +20,12 @@ public class Route {
     private final StringProperty start;
     private final StringProperty finish;
     private final IntegerProperty length;
-    private final ObjectProperty<LocalDate> lastUpdateTime;
+    private final ObjectProperty<Date> lastUpdateTime;
     /**
      * Default constructor.
      */
     public Route() {
-        this(null, null);
+        this(null, null, null, null, null, null);
     }
 
     /**
@@ -33,16 +33,19 @@ public class Route {
      * 
      * @param name
      * @param author
+     * @param start
+     * @param finish
+     * @param length
+     * @param lastUpdateTime
      */
-    public Route(String name, String author) {
+    public Route(String name, String author, String start, String finish, Integer length, Date lastUpdateTime) {
         this.name = new SimpleStringProperty(name);
         this.author = new SimpleStringProperty(author);
-
-        // Some initial dummy data, just for convenient testing.
-        this.start = new SimpleStringProperty("some startPlace");
-        this.length = new SimpleIntegerProperty(12);
-        this.finish = new SimpleStringProperty("some finishPlace");
-        this.lastUpdateTime = new SimpleObjectProperty<LocalDate>(LocalDate.of(2016, 11, 18));
+        this.start = new SimpleStringProperty(start);
+        this.finish = new SimpleStringProperty(finish);
+        
+        this.length = new SimpleIntegerProperty(length);
+        this.lastUpdateTime = new SimpleObjectProperty<>(lastUpdateTime);
     }
 
     public String getName() {
@@ -105,15 +108,15 @@ public class Route {
         return finish;
     }
 
-    public LocalDate getLastUpdateTime() {
+    public Date getLastUpdateTime() {
         return lastUpdateTime.get();
     }
 
-    public void setLastUpdateTime(LocalDate newUpdateTime) {
+    public void setLastUpdateTime(Date newUpdateTime) {
         this.lastUpdateTime.set(newUpdateTime);
     }
 
-    public ObjectProperty<LocalDate> lastUpdateTimeProperty() {
+    public ObjectProperty<Date> lastUpdateTimeProperty() {
         return lastUpdateTime;
     }
 }
