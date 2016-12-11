@@ -9,6 +9,7 @@ import hu.crs.cycleroutesafetymaven.model.Route;
 import hu.crs.cycleroutesafetymaven.model.RouteDataAccessor;
 import hu.crs.cycleroutesafetymaven.view.RouteEditDialogController;
 import hu.crs.cycleroutesafetymaven.view.RouteOverviewController;
+import hu.crs.cycleroutesafetymaven.view.ShowRouteMapController;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -53,7 +54,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws SQLException, ClassNotFoundException {
         //TODO: ask into the DB w the user that is accessing the APP after login ofc...
-        dataAccessor = new RouteDataAccessor("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/cycleroutes?zeroDateTimeBehavior=convertToNull", "ahorvath", "A\"brakadabra87");
+        dataAccessor = new RouteDataAccessor("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost:3306/cycleroutes?zeroDateTimeBehavior=convertToNull", "ahorvath", "A\"brakadabra87");
         try {
             
             routeData.addAll(dataAccessor.getRouteList());
@@ -171,7 +172,41 @@ REMOVABLE*/
         }
     }
 
+    public boolean showMapDialog(Route selectedRoute) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            // Load the fxml file and create a new stage for the popup dialog.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("/fxml/ShowRouteMap.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
 
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Show Route on Map");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Set the person into the controller.
+            ShowRouteMapController controller = loader.getController();
+            //controller.setDialogStage(dialogStage);
+            //controller.setRoute(selectedRoute);
+
+            
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+            //return controller.isOkClicked();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        
+    }
+    
+    
     /**
      * Returns the main stage.
      * @return

@@ -36,6 +36,10 @@ public class RouteOverviewController {
     private Button deleteButton;
     @FXML
     private Button editButton;
+    @FXML
+    private Button newButton;
+    @FXML
+    private Button mapButton;
     
 
     // Reference to the main application.
@@ -166,6 +170,23 @@ public class RouteOverviewController {
         boolean okClicked = mainApp.showRouteEditDialog(tempRoute);
         if (okClicked) {
             mainApp.getRouteData().add(tempRoute);
+        }
+    }
+    
+    /**
+     * Called when the user clicks the SHOWMAP button. Opens a dialog to see
+     * the map representation of the selected route.
+     */
+    @FXML
+    private void handleShowMap() {
+        Route selectedRoute = routeTable.getSelectionModel().getSelectedItem();
+
+        boolean okClicked = mainApp.showMapDialog(selectedRoute);
+
+        if (okClicked) {
+            //TODO: need to save the changes that was made through the MAPS 
+            //interface
+            showRouteDetails(selectedRoute);
         }
     }
 }
