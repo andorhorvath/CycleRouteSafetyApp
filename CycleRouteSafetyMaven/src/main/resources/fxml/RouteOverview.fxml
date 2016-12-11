@@ -61,9 +61,10 @@
                   </GridPane>
                   <ButtonBar layoutX="137.0" layoutY="244.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0">
                     <buttons>
-                      <Button mnemonicParsing="false" onAction="#handleNewRoute" text="New..." />
+                      <Button fx:id="newButton" mnemonicParsing="false" onAction="#handleNewRoute" text="New..." />
                         <Button fx:id="editButton" mnemonicParsing="false" onAction="#handleEditRoute" text="Edit..." />
                         <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#handleDeleteRoute" text="Delete" />
+                        <Button fx:id="mapButton" mnemonicParsing="false" onAction="#handleShowMap" text="MAP" />
                     </buttons>
                   </ButtonBar>
                </children>
