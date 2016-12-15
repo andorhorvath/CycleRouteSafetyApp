@@ -48,8 +48,8 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     private Route route;
     
     /**
-     * set the MapView’s initialization listener to the FXMLController as well
-     * as bind the address property to the address TextField’s text property.
+     * set the MapViewâ€™s initialization listener to the FXMLController as well
+     * as bind the address property to the address TextFieldâ€™s text property.
      * 
      * @param url
      * @param rb 
@@ -77,63 +77,71 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                    
         map = mapView.createMap(mapOptions);
 
-        if (! this.getRoute().getIsDirectionsUsed().getValue()) {
-            //if there is no data for the route's POIs
-            
-            // start address geocoding
-            LatLong latLong = geoCodeAddress(route.getStart());
-            persistAddressGeoCodeInfo(latLong);
-            
-            geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
-                LatLong latLong = null;
-
-                if( status == GeocoderStatus.ZERO_RESULTS) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found");
-                    alert.show();
-                    return;
-                } else if( results.length > 1 ) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
-                    alert.show();
-                    latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-                } else {
-                    latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-                }
-                map.setCenter(latLong);
-            });
-            //finish address Geocoding
-            geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
-                LatLong latLong = null;
-
-                if( status == GeocoderStatus.ZERO_RESULTS) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "No matching finish addresses found");
-                    alert.show();
-                    return;
-                } else if( results.length > 1 ) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple finish addresses results found, showing the first one.");
-                    alert.show();
-                    latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-                } else {
-                    latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-                }
-            });
-            //count LatLong for every marker of the route
-            //persist LatLong data of markers to DB
-
-            
+// start address geocoding & putting marker on map
+        geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
+        LatLong latLong = null;
+        if( status == GeocoderStatus.ZERO_RESULTS) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getStart());
+            alert.show();
+            return;
+        } else if( results.length > 1 ) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
+            alert.show();
+            latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
         } else {
-            // if there is already defined LatLong data for the POIs
+            latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
         }
+//++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
+        MarkerOptions startMarkerOptions = new MarkerOptions();
+        startMarkerOptions.position(latLong);
+        Marker startMarker = new Marker(startMarkerOptions);
+        map.addMarker( startMarker );
+
+        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+        infoWindowOptions.content("<h2>Start Point</h2>");
+        InfoWindow startMarkerInfoWindow = new InfoWindow(infoWindowOptions);
+        startMarkerInfoWindow.open(map, startMarker);
+        map.setCenter(latLong);
+        });
+
+//finish address geocoding & putting marker on map
+        geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
+            LatLong latLong = null;
+
+            if( status == GeocoderStatus.ZERO_RESULTS) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching finish addresses found. Address is: " + route.getFinish());
+                alert.show();
+                return;
+            } else if( results.length > 1 ) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple finish addresses results found, showing the first one.");
+                alert.show();
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            } else {
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            }
+//++TODO: private void addFinishMarker(startMarkerOptions, LatLong position, String infoWindowContent);
+            MarkerOptions finishMarkerOptions = new MarkerOptions();
+            finishMarkerOptions.position(latLong);
+            Marker finishMarker = new Marker(finishMarkerOptions);
+            map.addMarker( finishMarker );
+
+            InfoWindowOptions finishInfoWindowOptions = new InfoWindowOptions();
+            finishInfoWindowOptions.content("<h2>Finish Line</h2>");
+            InfoWindow finishMarkerInfoWindow = new InfoWindow(finishInfoWindowOptions);
+            finishMarkerInfoWindow.open(map, finishMarker);
+
+        });
         
-        //TODO: put start, finish markers on map
-        //TODO: add startMarker();
-        //TODO: add finishMarker();
-        
+//TODO: when SHOWMARKERS button pushed, geocode every marker from DB thats 
+//connected to this route
+                   
         //TODO: onMapRightClick() ===> show MapContextMenu /addNewMarker(), what is here?---getGeoLocationInfo() + displayGeoLocationInfo(), centerMapHere(LatLong ll), +++addWaypointToRoute()/
         //TODO: onMarkerRightClick() ===> show MarkerContextMenu /editMarker(), deleteMarker(), +++show streetView(), +++/
         //TODO: onMarkerClick() ===> showMarkerInfoWindow();
         //TODO: Menufejléc + HelpTextBox helpTextBox;
         //TODO: ADD searchField + CenterMap()
         
+            /* ADD MARKER EXAMPLE
         MarkerOptions markerOptions5 = new MarkerOptions();
         LatLong fredWilkieLocation = new LatLong(47.6597, -122.3357);
         markerOptions5.position(fredWilkieLocation);
@@ -146,7 +154,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                                 + "ETA: 45 minutes" );
         InfoWindow fredWilkeInfoWindow = new InfoWindow(infoWindowOptions);
         fredWilkeInfoWindow.open(map, fredWilkieMarker);
-
+*/
     }
     
     @FXML
@@ -184,14 +192,14 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         this.route = route;
     }
 
-    private LatLong geoCodeAddress(String address) {
-        LatLong latLongResult = null;
-        final Double x;
-        
-        
+    /**
+     * Since it's not allowed to store LatLong data in DB, this function
+     * puts a start marker to the address that is read from the DB.
+     * @param address 
+     */
+    private void putGeoCodeStartAddress(String address) {
         geocodingService.geocode(address, (GeocodingResult[] results, GeocoderStatus status) -> {
-        LatLong latLong = null;
-
+            LatLong latLong = null;
             if( status == GeocoderStatus.ZERO_RESULTS) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found");
                 alert.show();
@@ -200,12 +208,21 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
                 alert.show();
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-                x = results[0].getGeometry().getLocation().getLatitude();
             } else {
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             }
 
+            MarkerOptions markerOptions1 = new MarkerOptions();
+            markerOptions1.position(latLong);
+            Marker startMarker = new Marker(markerOptions1);
+            map.addMarker( startMarker );
+        
+            InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+            infoWindowOptions.content("<h2>StartPoint</h2>");
+            InfoWindow startMarkerInfoWindow = new InfoWindow(infoWindowOptions);
+            startMarkerInfoWindow.open(map, startMarker);
+
+            
         });
-        return latLongResult;
     }
 }
