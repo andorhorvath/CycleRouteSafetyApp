@@ -49,8 +49,9 @@ public class RouteDataAccessor {
                 Integer length = resultSet.getInt("routeLength");
                 Timestamp lastUpdateTimeStamp = resultSet.getTimestamp("lastUpdateTime");
                 Date lastUpdateTime = lastUpdateTimeStamp;
-
-                Route route = new Route(name, author, start, finish, length, lastUpdateTime);
+                Boolean isDirectionsUsed = resultSet.getBoolean("plannedRoute");
+                
+                Route route = new Route(name, author, start, finish, length, lastUpdateTime, isDirectionsUsed);
                 routeList.add(route);
             }
             return routeList ;

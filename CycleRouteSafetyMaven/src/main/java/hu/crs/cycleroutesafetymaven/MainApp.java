@@ -188,10 +188,10 @@ REMOVABLE*/
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
-            // Set the person into the controller.
+            // Set the route into the controller.
             ShowRouteMapController controller = loader.getController();
             //controller.setDialogStage(dialogStage);
-            //controller.setRoute(selectedRoute);
+            controller.setRoute(selectedRoute);
 
             
             // Show the dialog and wait until the user closes it

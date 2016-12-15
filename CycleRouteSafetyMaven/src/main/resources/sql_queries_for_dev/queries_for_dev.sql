@@ -16,5 +16,5 @@ INSERT INTO cycleroutes.routes (`routeName`, author, `startPoint`, `finishPoint`
 
 
 # ALTER TABLE Routes DROP lastUpdateTime;
-# ALTER TABLE Routes ADD lastUpdateTime DATETIME;
+ALTER TABLE Routes ADD plannedRoute BOOLEAN;
 # ALTER TABLE cycleroutes.routes ADD UNIQUE (routeName);
