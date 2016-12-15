@@ -80,6 +80,42 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         if (! this.getRoute().getIsDirectionsUsed().getValue()) {
             //if there is no data for the route's POIs
             
+            // start address geocoding
+            LatLong latLong = geoCodeAddress(route.getStart());
+            persistAddressGeoCodeInfo(latLong);
+            
+            geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
+                LatLong latLong = null;
+
+                if( status == GeocoderStatus.ZERO_RESULTS) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found");
+                    alert.show();
+                    return;
+                } else if( results.length > 1 ) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
+                    alert.show();
+                    latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+                } else {
+                    latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+                }
+                map.setCenter(latLong);
+            });
+            //finish address Geocoding
+            geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
+                LatLong latLong = null;
+
+                if( status == GeocoderStatus.ZERO_RESULTS) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "No matching finish addresses found");
+                    alert.show();
+                    return;
+                } else if( results.length > 1 ) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple finish addresses results found, showing the first one.");
+                    alert.show();
+                    latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+                } else {
+                    latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+                }
+            });
             //count LatLong for every marker of the route
             //persist LatLong data of markers to DB
 
@@ -146,5 +182,30 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
 
     public void setRoute(Route route) {
         this.route = route;
+    }
+
+    private LatLong geoCodeAddress(String address) {
+        LatLong latLongResult = null;
+        final Double x;
+        
+        
+        geocodingService.geocode(address, (GeocodingResult[] results, GeocoderStatus status) -> {
+        LatLong latLong = null;
+
+            if( status == GeocoderStatus.ZERO_RESULTS) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found");
+                alert.show();
+                return;
+            } else if( results.length > 1 ) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
+                alert.show();
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+                x = results[0].getGeometry().getLocation().getLatitude();
+            } else {
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            }
+
+        });
+        return latLongResult;
     }
 }
