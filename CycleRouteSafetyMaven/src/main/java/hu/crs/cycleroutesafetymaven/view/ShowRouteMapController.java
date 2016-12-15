@@ -41,11 +41,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
 
     @Override
     public void mapInitialized() {
-        LatLong joeSmithLocation = new LatLong(47.6197, -122.3231);
-        LatLong joshAndersonLocation = new LatLong(47.6297, -122.3431);
-        LatLong bobUnderwoodLocation = new LatLong(47.6397, -122.3031);
-        LatLong tomChoiceLocation = new LatLong(47.6497, -122.3325);
-        LatLong fredWilkieLocation = new LatLong(47.6597, -122.3357);
+
         
         
         //Set the initial properties of the map.
@@ -63,40 +59,37 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                    
         map = mapView.createMap(mapOptions);
 
-        //Add markers to the map
-        MarkerOptions markerOptions1 = new MarkerOptions();
-        markerOptions1.position(joeSmithLocation);
+    
+//TODO:
+        //add startMarker();
+        //add finishMarker();
         
-        MarkerOptions markerOptions2 = new MarkerOptions();
-        markerOptions2.position(joshAndersonLocation);
-        
-        MarkerOptions markerOptions3 = new MarkerOptions();
-        markerOptions3.position(bobUnderwoodLocation);
-        
-        MarkerOptions markerOptions4 = new MarkerOptions();
-        markerOptions4.position(tomChoiceLocation);
+        //onMapRightClick() ===> show MapContextMenu /addNewMarker(), what is here?---getGeoLocationInfo() + displayGeoLocationInfo(), centerMapHere(LatLong ll), +++addWaypointToRoute()/
+        //onMarkerRightClick() ===> show MarkerContextMenu /editMarker(), deleteMarker(), +++show streetView(), +++/
+        //onMarkerClick() ===> showMarkerInfoWindow();
+        //Menufejléc + HelpTextBox helpTextBox;
+        //ADD searchField + CenterMap()
         
         MarkerOptions markerOptions5 = new MarkerOptions();
+        LatLong fredWilkieLocation = new LatLong(47.6597, -122.3357);
         markerOptions5.position(fredWilkieLocation);
-        
-        Marker joeSmithMarker = new Marker(markerOptions1);
-        Marker joshAndersonMarker = new Marker(markerOptions2);
-        Marker bobUnderwoodMarker = new Marker(markerOptions3);
-        Marker tomChoiceMarker= new Marker(markerOptions4);
         Marker fredWilkieMarker = new Marker(markerOptions5);
-        
-        map.addMarker( joeSmithMarker );
-        map.addMarker( joshAndersonMarker );
-        map.addMarker( bobUnderwoodMarker );
-        map.addMarker( tomChoiceMarker );
         map.addMarker( fredWilkieMarker );
         
         InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
         infoWindowOptions.content("<h2>Fred Wilkie</h2>"
                                 + "Current Location: Safeway<br>"
                                 + "ETA: 45 minutes" );
-
         InfoWindow fredWilkeInfoWindow = new InfoWindow(infoWindowOptions);
         fredWilkeInfoWindow.open(map, fredWilkieMarker);
-    }   
+
+    }
+    
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
+    }
 }

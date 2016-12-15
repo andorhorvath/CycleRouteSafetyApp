@@ -21,11 +21,12 @@ public class Route {
     private final StringProperty finish;
     private final IntegerProperty length;
     private final ObjectProperty<Date> lastUpdateTime;
+    private final Boolean isDirectionsUsed;
     /**
      * Default constructor.
      */
     public Route() {
-        this("", "", "", "", 0, null);
+        this("", "", "", "", 0, null, false);
     }
 
     /**
@@ -38,7 +39,7 @@ public class Route {
      * @param length
      * @param lastUpdateTime
      */
-    public Route(String name, String author, String start, String finish, Integer length, Date lastUpdateTime) {
+    public Route(String name, String author, String start, String finish, Integer length, Date lastUpdateTime, Boolean isDirectionsUsed) {
         this.name = new SimpleStringProperty(name);
         this.author = new SimpleStringProperty(author);
         this.start = new SimpleStringProperty(start);
@@ -46,6 +47,7 @@ public class Route {
         
         this.length = new SimpleIntegerProperty(length);
         this.lastUpdateTime = new SimpleObjectProperty<>(lastUpdateTime);
+        this.isDirectionsUsed = isDirectionsUsed;
     }
 
     public String getName() {
