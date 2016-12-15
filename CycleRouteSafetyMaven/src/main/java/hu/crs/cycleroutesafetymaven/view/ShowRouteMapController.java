@@ -24,6 +24,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javax.swing.event.DocumentEvent;
 
 
 /**
@@ -73,35 +74,39 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 .scaleControl(false)
                 .streetViewControl(false)
                 .zoomControl(false)
+                .scaleControl(false)
                 .zoom(12);
                    
         map = mapView.createMap(mapOptions);
 
+        
 // start address geocoding & putting marker on map
         geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
-        LatLong latLong = null;
-        if( status == GeocoderStatus.ZERO_RESULTS) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getStart());
-            alert.show();
-            return;
-        } else if( results.length > 1 ) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
-            alert.show();
-            latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-        } else {
-            latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-        }
-//++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
-        MarkerOptions startMarkerOptions = new MarkerOptions();
-        startMarkerOptions.position(latLong);
-        Marker startMarker = new Marker(startMarkerOptions);
-        map.addMarker( startMarker );
+            LatLong latLong = null;
+            if( status == GeocoderStatus.ZERO_RESULTS) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getStart());
+                alert.show();
+                return;
+            } else if( results.length > 1 ) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
+                alert.show();
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            } else {
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            }
+    //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
+            MarkerOptions startMarkerOptions = new MarkerOptions();
+            startMarkerOptions.position(latLong);
+            Marker startMarker = new Marker(startMarkerOptions);
+            map.addMarker( startMarker );
 
-        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-        infoWindowOptions.content("<h2>Start Point</h2>");
-        InfoWindow startMarkerInfoWindow = new InfoWindow(infoWindowOptions);
-        startMarkerInfoWindow.open(map, startMarker);
-        map.setCenter(latLong);
+            InfoWindowOptions startMarkerInfoWindowOptions = new InfoWindowOptions();
+            startMarkerInfoWindowOptions.content("<h2>Start Point FFFFS</h2>");
+            InfoWindow startMarkerInfoWindow = new InfoWindow(startMarkerInfoWindowOptions);
+            startMarkerInfoWindow.open(map, startMarker);
+            map.setCenter(latLong);
+            map.setZoom(16);
+            
         });
 
 //finish address geocoding & putting marker on map
@@ -127,8 +132,8 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
 
             InfoWindowOptions finishInfoWindowOptions = new InfoWindowOptions();
             finishInfoWindowOptions.content("<h2>Finish Line</h2>");
-            InfoWindow finishMarkerInfoWindow = new InfoWindow(finishInfoWindowOptions);
-            finishMarkerInfoWindow.open(map, finishMarker);
+            //InfoWindow finishMarkerInfoWindow = new InfoWindow(finishInfoWindowOptions);
+            //finishMarkerInfoWindow.open(map, finishMarker);
 
         });
         
@@ -179,8 +184,10 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             
             map.setCenter(latLong);
             map.setZoom(17);
+            
+            
 
-});
+        });
         
     }
     
@@ -192,37 +199,4 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         this.route = route;
     }
 
-    /**
-     * Since it's not allowed to store LatLong data in DB, this function
-     * puts a start marker to the address that is read from the DB.
-     * @param address 
-     */
-    private void putGeoCodeStartAddress(String address) {
-        geocodingService.geocode(address, (GeocodingResult[] results, GeocoderStatus status) -> {
-            LatLong latLong = null;
-            if( status == GeocoderStatus.ZERO_RESULTS) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found");
-                alert.show();
-                return;
-            } else if( results.length > 1 ) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
-                alert.show();
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-            } else {
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-            }
-
-            MarkerOptions markerOptions1 = new MarkerOptions();
-            markerOptions1.position(latLong);
-            Marker startMarker = new Marker(markerOptions1);
-            map.addMarker( startMarker );
-        
-            InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-            infoWindowOptions.content("<h2>StartPoint</h2>");
-            InfoWindow startMarkerInfoWindow = new InfoWindow(infoWindowOptions);
-            startMarkerInfoWindow.open(map, startMarker);
-
-            
-        });
-    }
 }
