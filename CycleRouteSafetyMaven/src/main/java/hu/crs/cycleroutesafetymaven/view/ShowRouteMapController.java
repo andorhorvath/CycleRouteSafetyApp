@@ -59,7 +59,14 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                    
         map = mapView.createMap(mapOptions);
 
-    
+        if (this.getRoute().getIsDirectionsUsed().getValue()) {
+            //if there is no data for the route's POIs
+            
+            //count LatLong for every marker of the route
+            //persist LatLong data of markers to DB
+            //put start, finish markers on map
+            
+        }
 //TODO:
         //add startMarker();
         //add finishMarker();

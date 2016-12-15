@@ -1,8 +1,10 @@
 package hu.crs.cycleroutesafetymaven.model;
 
 import java.util.Date;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,7 +23,9 @@ public class Route {
     private final StringProperty finish;
     private final IntegerProperty length;
     private final ObjectProperty<Date> lastUpdateTime;
-    private final Boolean isDirectionsUsed;
+    private final BooleanProperty isDirectionsUsed;
+
+
     /**
      * Default constructor.
      */
@@ -47,7 +51,7 @@ public class Route {
         
         this.length = new SimpleIntegerProperty(length);
         this.lastUpdateTime = new SimpleObjectProperty<>(lastUpdateTime);
-        this.isDirectionsUsed = isDirectionsUsed;
+        this.isDirectionsUsed = new SimpleBooleanProperty(isDirectionsUsed);
     }
 
     public String getName() {
@@ -120,5 +124,13 @@ public class Route {
 
     public ObjectProperty<Date> lastUpdateTimeProperty() {
         return lastUpdateTime;
+    }
+    
+    public void setIsDirectionsUsed(Boolean newIsDirectionsUsed) {
+        this.isDirectionsUsed.set(newIsDirectionsUsed);
+    }
+    
+    public BooleanProperty getIsDirectionsUsed() {
+        return isDirectionsUsed;
     }
 }
