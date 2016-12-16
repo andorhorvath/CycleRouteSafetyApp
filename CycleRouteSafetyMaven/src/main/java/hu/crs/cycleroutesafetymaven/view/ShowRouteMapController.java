@@ -49,8 +49,8 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     private Route route;
     
     /**
-     * set the MapViewâ€™s initialization listener to the FXMLController as well
-     * as bind the address property to the address TextFieldâ€™s text property.
+     * set the MapViewÃ¢â‚¬â„¢s initialization listener to the FXMLController as well
+     * as bind the address property to the address TextFieldÃ¢â‚¬â„¢s text property.
      * 
      * @param url
      * @param rb 
@@ -74,13 +74,17 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 .scaleControl(false)
                 .streetViewControl(false)
                 .zoomControl(false)
-                .scrollWheel(false)
+//                .scrollWheel(false)
                 .zoom(12);
                    
         map = mapView.createMap(mapOptions);
 
         
 // start address geocoding & putting marker on map
+
+        
+//        geocodingStart(String route.getStart());
+        
         geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
             LatLong latLong = null;
             if( status == GeocoderStatus.ZERO_RESULTS) {
@@ -143,7 +147,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         //TODO: onMapRightClick() ===> show MapContextMenu /addNewMarker(), what is here?---getGeoLocationInfo() + displayGeoLocationInfo(), centerMapHere(LatLong ll), +++addWaypointToRoute()/
         //TODO: onMarkerRightClick() ===> show MarkerContextMenu /editMarker(), deleteMarker(), +++show streetView(), +++/
         //TODO: onMarkerClick() ===> showMarkerInfoWindow();
-        //TODO: Menufejléc + HelpTextBox helpTextBox;
+        //TODO: MenufejlÃ©c + HelpTextBox helpTextBox;
         //TODO: ADD searchField + CenterMap()
         
             /* ADD MARKER EXAMPLE
