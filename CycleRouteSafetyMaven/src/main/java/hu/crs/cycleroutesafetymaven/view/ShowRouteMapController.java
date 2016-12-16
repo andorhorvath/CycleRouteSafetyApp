@@ -2,6 +2,7 @@ package hu.crs.cycleroutesafetymaven.view;
 
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
+import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.InfoWindow;
 import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
@@ -24,7 +25,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javax.swing.event.DocumentEvent;
 
 
 /**
@@ -46,6 +46,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     private GeocodingService geocodingService;
     private StringProperty addressToSearch = new SimpleStringProperty();
     
+    private LatLong latLon;
     private Route route;
     
     /**
@@ -80,11 +81,9 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         map = mapView.createMap(mapOptions);
 
         
+        
+       
 // start address geocoding & putting marker on map
-
-        
-//        geocodingStart(String route.getStart());
-        
         geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
             LatLong latLong = null;
             if( status == GeocoderStatus.ZERO_RESULTS) {
@@ -96,23 +95,64 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 alert.show();
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             } else {
+                System.out.println("### DEBUG START ### geocodePoint lambda ELSE ága");
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             }
+            this.latLon = latLong;
+            System.out.println("### DEBUG START ### geocodePoint lambda utolsó utasítása ez");
     //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
+            
+            
             MarkerOptions startMarkerOptions = new MarkerOptions();
             startMarkerOptions.position(latLong);
             Marker startMarker = new Marker(startMarkerOptions);
             map.addMarker( startMarker );
+            System.out.println("### DEBUG START ###  marker added");
 
             InfoWindowOptions startMarkerInfoWindowOptions = new InfoWindowOptions();
             startMarkerInfoWindowOptions.content("<h2>Start Point FFFFS</h2>");
             InfoWindow startMarkerInfoWindow = new InfoWindow(startMarkerInfoWindowOptions);
             startMarkerInfoWindow.open(map, startMarker);
+            System.out.println("### DEBUG START ###  before centering&zoom");
             map.setCenter(latLong);
-            map.setZoom(16);
-            
-        });
 
+        });
+        
+        
+        geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
+            LatLong latLong = null;
+            if( status == GeocoderStatus.ZERO_RESULTS) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getFinish());
+                alert.show();
+                return;
+            } else if( results.length > 1 ) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple finish address results found, showing the first one.");
+                alert.show();
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            } else {
+                System.out.println("### DEBUG FINISH ### geocodePoint lambda ELSE ága");
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            }
+            this.latLon = latLong;
+            System.out.println("### DEBUG FINISH ### geocodePoint lambda utolsó utasítása ez");
+    //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
+            
+            
+            MarkerOptions finishMarkerOptions = new MarkerOptions();
+            finishMarkerOptions.position(latLong);
+            Marker finishMarker = new Marker(finishMarkerOptions);
+            map.addMarker( finishMarker );
+            System.out.println("### DEBUG FINISH ###  finish marker added");
+
+            InfoWindowOptions finishMarkerInfoWindowOptions = new InfoWindowOptions();
+            finishMarkerInfoWindowOptions.content("<h2>Finish Line</h2>");
+            InfoWindow finishMarkerInfoWindow = new InfoWindow(finishMarkerInfoWindowOptions);
+            finishMarkerInfoWindow.open(map, finishMarker);
+            System.out.println("### DEBUG FINISH ###  before centering&zoom");
+            //map.setCenter(latLong);
+
+        });
+        /*
 //finish address geocoding & putting marker on map
         geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
             LatLong latLong = null;
@@ -140,7 +180,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             //finishMarkerInfoWindow.open(map, finishMarker);
 
         });
-        
+*/        
 //TODO: when SHOWMARKERS button pushed, geocode every marker from DB thats 
 //connected to this route
                    
@@ -185,7 +225,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             } else {
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             }
-            
+
             map.setCenter(latLong);
             map.setZoom(17);
             
@@ -203,4 +243,11 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         this.route = route;
     }
 
+    
+    public void geocodePoint(String address) {
+            System.out.println("### DEBUG ### geocodePoint meghívva");
+
+        System.out.println("### DEBUG ### geocodePoint lambda után");
+
+    }
 }
