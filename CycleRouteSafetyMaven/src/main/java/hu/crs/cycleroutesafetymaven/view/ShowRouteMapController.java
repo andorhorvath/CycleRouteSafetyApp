@@ -20,13 +20,11 @@ import java.util.ResourceBundle;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javax.swing.event.DocumentEvent;
 
 
 /**
@@ -86,22 +84,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         
        
 // start address geocoding & putting marker on map
-
-        
-//        geocodingStart(String route.getStart());
-        LatLong position = geocodePoint(route.getStart());
-            MarkerOptions startMarkerOptions = new MarkerOptions();
-            startMarkerOptions.position(position);
-            Marker startMarker = new Marker(startMarkerOptions);
-            map.addMarker( startMarker );
-
-            InfoWindowOptions startMarkerInfoWindowOptions = new InfoWindowOptions();
-            startMarkerInfoWindowOptions.content("<h2>Start Point FFFFS</h2>");
-            InfoWindow startMarkerInfoWindow = new InfoWindow(startMarkerInfoWindowOptions);
-            startMarkerInfoWindow.open(map, startMarker);
-
-        
-
+        geocodePoint(route.getStart());
 
         
         
@@ -198,8 +181,8 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     }
 
     
-    public LatLong geocodePoint(String address) {
-            
+    public void geocodePoint(String address) {
+            System.out.println("### DEBUG ### geocodePoint meghívva");
             geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
             LatLong latLong = null;
             if( status == GeocoderStatus.ZERO_RESULTS) {
@@ -211,14 +194,29 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 alert.show();
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             } else {
+                System.out.println("### DEBUG ### geocodePoint lambda ELSE ága");
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             }
             this.latLon = latLong;
+            System.out.println("### DEBUG ### geocodePoint lambda utolsó utasítása ez");
     //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
+            
+            
+            MarkerOptions startMarkerOptions = new MarkerOptions();
+            startMarkerOptions.position(latLong);
+            Marker startMarker = new Marker(startMarkerOptions);
+            map.addMarker( startMarker );
+            System.out.println("### DEBUG ###  marker added");
 
-        });
-            map.setCenter(latLon);
+            InfoWindowOptions startMarkerInfoWindowOptions = new InfoWindowOptions();
+            startMarkerInfoWindowOptions.content("<h2>Start Point FFFFS</h2>");
+            InfoWindow startMarkerInfoWindow = new InfoWindow(startMarkerInfoWindowOptions);
+            startMarkerInfoWindow.open(map, startMarker);
+            System.out.println("### DEBUG ###  before centering&zoom");
+            map.setCenter(latLong);
             map.setZoom(16);
-        return latLon;
+        });
+        System.out.println("### DEBUG ### geocodePoint lambda után");
+
     }
 }
