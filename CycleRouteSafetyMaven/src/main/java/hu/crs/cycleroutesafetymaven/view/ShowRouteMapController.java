@@ -74,7 +74,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 .scaleControl(false)
                 .streetViewControl(false)
                 .zoomControl(false)
-                .scaleControl(false)
+                .scrollWheel(false)
                 .zoom(12);
                    
         map = mapView.createMap(mapOptions);
