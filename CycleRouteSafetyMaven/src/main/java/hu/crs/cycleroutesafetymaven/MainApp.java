@@ -23,7 +23,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javax.swing.event.DocumentEvent;
 
 
 public class MainApp extends Application {
@@ -105,14 +104,8 @@ REMOVABLE*/
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
             primaryStage.show();
-            /*
-            scene.setOnScroll(new EventHandler() {
-                @Override public void handle(ScrollEvent event) {
-                    node.setTranslateX(node.getTranslateX() + event.getDeltaX());
-                    node.setTranslateY(node.getTranslateY() + event.getDeltaY());
-                }
-            });
-              */  
+
+ 
         } catch (IOException e) {
             e.printStackTrace();
         }
