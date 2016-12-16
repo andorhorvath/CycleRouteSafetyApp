@@ -2,6 +2,7 @@ package hu.crs.cycleroutesafetymaven.view;
 
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
+import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.InfoWindow;
 import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
@@ -19,6 +20,7 @@ import java.util.ResourceBundle;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -46,6 +48,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     private GeocodingService geocodingService;
     private StringProperty addressToSearch = new SimpleStringProperty();
     
+    private LatLong latLon;
     private Route route;
     
     /**
@@ -80,27 +83,15 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         map = mapView.createMap(mapOptions);
 
         
+        
+       
 // start address geocoding & putting marker on map
 
         
 //        geocodingStart(String route.getStart());
-        
-        geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
-            LatLong latLong = null;
-            if( status == GeocoderStatus.ZERO_RESULTS) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getStart());
-                alert.show();
-                return;
-            } else if( results.length > 1 ) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
-                alert.show();
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-            } else {
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-            }
-    //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
+        LatLong position = geocodePoint(route.getStart());
             MarkerOptions startMarkerOptions = new MarkerOptions();
-            startMarkerOptions.position(latLong);
+            startMarkerOptions.position(position);
             Marker startMarker = new Marker(startMarkerOptions);
             map.addMarker( startMarker );
 
@@ -108,11 +99,14 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             startMarkerInfoWindowOptions.content("<h2>Start Point FFFFS</h2>");
             InfoWindow startMarkerInfoWindow = new InfoWindow(startMarkerInfoWindowOptions);
             startMarkerInfoWindow.open(map, startMarker);
-            map.setCenter(latLong);
-            map.setZoom(16);
-            
-        });
 
+        
+
+
+        
+        
+        
+        /*
 //finish address geocoding & putting marker on map
         geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
             LatLong latLong = null;
@@ -140,7 +134,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             //finishMarkerInfoWindow.open(map, finishMarker);
 
         });
-        
+*/        
 //TODO: when SHOWMARKERS button pushed, geocode every marker from DB thats 
 //connected to this route
                    
@@ -185,7 +179,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             } else {
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             }
-            
+
             map.setCenter(latLong);
             map.setZoom(17);
             
@@ -203,4 +197,28 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         this.route = route;
     }
 
+    
+    public LatLong geocodePoint(String address) {
+            
+            geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
+            LatLong latLong = null;
+            if( status == GeocoderStatus.ZERO_RESULTS) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getStart());
+                alert.show();
+                return;
+            } else if( results.length > 1 ) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
+                alert.show();
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            } else {
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            }
+            this.latLon = latLong;
+    //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
+
+        });
+            map.setCenter(latLon);
+            map.setZoom(16);
+        return latLon;
+    }
 }
