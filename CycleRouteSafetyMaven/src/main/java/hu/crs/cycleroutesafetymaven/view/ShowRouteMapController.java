@@ -36,19 +36,30 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     
     @FXML
     private GoogleMapView mapView;
-    
     @FXML
     private TextField addressTextField;
     @FXML
     private Button searchButton;
+    @FXML
+    private Button startButton;
+    @FXML
+    private Button finishButton;
     
     private GoogleMap map;
     private GeocodingService geocodingService;
     private StringProperty addressToSearch = new SimpleStringProperty();
     
-    private LatLong latLon;
     private Route route;
     
+    private MarkerOptions startMarkerOptions;
+    private Marker startMarker;
+    private InfoWindowOptions startMarkerInfoWindowOptions;
+    private InfoWindow startMarkerInfoWindow;
+    
+    private MarkerOptions finishMarkerOptions;
+    private Marker finishMarker;
+    private InfoWindowOptions finishMarkerInfoWindowOptions;
+    private InfoWindow finishMarkerInfoWindow;
     /**
      * set the MapViewÃ¢â‚¬â„¢s initialization listener to the FXMLController as well
      * as bind the address property to the address TextFieldÃ¢â‚¬â„¢s text property.
@@ -60,6 +71,11 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     public void initialize(URL url, ResourceBundle rb) {
         mapView.addMapInializedListener(this);
         addressToSearch.bind(addressTextField.textProperty());
+        startMarkerInfoWindowOptions.content("<h2>Start point</h2>");
+        startMarkerInfoWindow = new InfoWindow(startMarkerInfoWindowOptions);
+        
+        finishMarkerInfoWindowOptions.content("<h2>Finish Line</h2>");
+        finishMarkerInfoWindow = new InfoWindow(finishMarkerInfoWindowOptions);
     }    
 
     @Override
@@ -95,27 +111,24 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 System.out.println("### DEBUG START 1) ### geocodePoint lambda ELSE ága");
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             }
-            this.latLon = latLong;
             System.out.println("### DEBUG START 2) ### geocodePoint lambda utolsó utasítása ez");
     //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
-            
-            
-            MarkerOptions startMarkerOptions = new MarkerOptions();
             startMarkerOptions.position(latLong);
-            Marker startMarker = new Marker(startMarkerOptions);
-            map.addMarker( startMarker );
-            System.out.println("### DEBUG START 3) ###  marker added");
-
-            InfoWindowOptions startMarkerInfoWindowOptions = new InfoWindowOptions();
-            startMarkerInfoWindowOptions.content("<h2>Start Point FFFFS</h2>");
-            InfoWindow startMarkerInfoWindow = new InfoWindow(startMarkerInfoWindowOptions);
-            startMarkerInfoWindow.open(map, startMarker);
-            System.out.println("### DEBUG START 4) ###  before centering&zoom");
             map.setCenter(latLong);
 
         });
-        
-       
+
+        startMarkerOptions = new MarkerOptions();
+        startMarker = new Marker(startMarkerOptions);
+        map.addMarker( startMarker );
+        System.out.println("### DEBUG START 3) ###  marker added");
+
+        startMarkerInfoWindowOptions = new InfoWindowOptions();
+        startMarkerInfoWindow = new InfoWindow(startMarkerInfoWindowOptions);
+        startMarkerInfoWindow.open(map, startMarker);
+        System.out.println("### DEBUG START 4) ###  before centering&zoom");
+
+/*
         geocodingService.geocode(route.getFinish(), (GeocodingResult[] results2, GeocoderStatus status2) -> {
             LatLong latLong = null;
             if( status2 == GeocoderStatus.ZERO_RESULTS) {
@@ -130,7 +143,6 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 System.out.println("### DEBUG FINISH 1) ### geocodePoint lambda ELSE ága");
                 latLong = new LatLong(results2[0].getGeometry().getLocation().getLatitude(), results2[0].getGeometry().getLocation().getLongitude());
             }
-            this.latLon = latLong;
             System.out.println("### DEBUG FINISH 2) ### geocodePoint lambda utolsó utasítása ez");
     //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
             
@@ -148,6 +160,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             //map.setCenter(latLong);
 
         });
+        */
         /*
 //finish address geocoding & putting marker on map
         geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
@@ -251,9 +264,6 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
 
     
     public void geocodePoint(String address) {
-            System.out.println("### DEBUG ### geocodePoint meghívva");
-
-        System.out.println("### DEBUG ### geocodePoint lambda után");
 
     }
 }
