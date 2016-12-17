@@ -194,8 +194,8 @@ REMOVABLE*/
             ShowRouteMapController controller = loader.getController();
             //controller.setDialogStage(dialogStage);
             controller.setRoute(selectedRoute);
-
             
+        
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
 

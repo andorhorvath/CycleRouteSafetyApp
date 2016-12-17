@@ -2,7 +2,6 @@ package hu.crs.cycleroutesafetymaven.view;
 
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
-import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.InfoWindow;
 import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
@@ -36,19 +35,35 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     
     @FXML
     private GoogleMapView mapView;
-    
     @FXML
     private TextField addressTextField;
     @FXML
     private Button searchButton;
+    @FXML
+    private Button startButton;
+    @FXML
+    private Button finishButton;
     
     private GoogleMap map;
     private GeocodingService geocodingService;
-    private StringProperty addressToSearch = new SimpleStringProperty();
+    private final StringProperty addressToSearch = new SimpleStringProperty();
     
-    private LatLong latLon;
     private Route route;
+    private Boolean foundMarkerExists;
+    private LatLong startLatLong;
+    private LatLong finishLatLong;
     
+    private MarkerOptions startMarkerOptions;
+    private Marker startMarker;
+    private InfoWindowOptions startMarkerInfoWindowOptions;
+    private InfoWindow startMarkerInfoWindow;
+    
+    private MarkerOptions finishMarkerOptions;
+    private Marker finishMarker;
+    private InfoWindowOptions finishMarkerInfoWindowOptions;
+    private InfoWindow finishMarkerInfoWindow;
+    
+    private Marker findMarker;
     /**
      * set the MapViewÃ¢â‚¬â„¢s initialization listener to the FXMLController as well
      * as bind the address property to the address TextFieldÃ¢â‚¬â„¢s text property.
@@ -60,6 +75,8 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     public void initialize(URL url, ResourceBundle rb) {
         mapView.addMapInializedListener(this);
         addressToSearch.bind(addressTextField.textProperty());
+
+        foundMarkerExists = false;
     }    
 
     @Override
@@ -79,136 +96,36 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 .zoom(12);
                    
         map = mapView.createMap(mapOptions);
+        
+        startMarkerOptions = new MarkerOptions();
+        startMarkerInfoWindowOptions = new InfoWindowOptions();
+        startMarkerInfoWindowOptions.content("<h2>Start point</h2>");
+        
+        finishMarkerOptions = new MarkerOptions();
+        finishMarkerInfoWindowOptions = new InfoWindowOptions();
+        finishMarkerInfoWindowOptions.content("<h2>Finish line</h2>");
 
-        
-        
        
-// start address geocoding & putting marker on map
-        geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
-            LatLong latLong = null;
-            if( status == GeocoderStatus.ZERO_RESULTS) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getStart());
-                alert.show();
-                return;
-            } else if( results.length > 1 ) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
-                alert.show();
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-            } else {
-                System.out.println("### DEBUG START ### geocodePoint lambda ELSE ága");
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-            }
-            this.latLon = latLong;
-            System.out.println("### DEBUG START ### geocodePoint lambda utolsó utasítása ez");
-    //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
-            
-            
-            MarkerOptions startMarkerOptions = new MarkerOptions();
-            startMarkerOptions.position(latLong);
-            Marker startMarker = new Marker(startMarkerOptions);
-            map.addMarker( startMarker );
-            System.out.println("### DEBUG START ###  marker added");
+//Lat: 47.5041761 Long: 19.072502699999973
 
-            InfoWindowOptions startMarkerInfoWindowOptions = new InfoWindowOptions();
-            startMarkerInfoWindowOptions.content("<h2>Start Point FFFFS</h2>");
-            InfoWindow startMarkerInfoWindow = new InfoWindow(startMarkerInfoWindowOptions);
-            startMarkerInfoWindow.open(map, startMarker);
-            System.out.println("### DEBUG START ###  before centering&zoom");
-            map.setCenter(latLong);
+            geocodeStart();
+            geocodeFinish();
 
-        });
-        
-        
-        geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
-            LatLong latLong = null;
-            if( status == GeocoderStatus.ZERO_RESULTS) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getFinish());
-                alert.show();
-                return;
-            } else if( results.length > 1 ) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple finish address results found, showing the first one.");
-                alert.show();
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-            } else {
-                System.out.println("### DEBUG FINISH ### geocodePoint lambda ELSE ága");
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-            }
-            this.latLon = latLong;
-            System.out.println("### DEBUG FINISH ### geocodePoint lambda utolsó utasítása ez");
-    //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
-            
-            
-            MarkerOptions finishMarkerOptions = new MarkerOptions();
-            finishMarkerOptions.position(latLong);
-            Marker finishMarker = new Marker(finishMarkerOptions);
-            map.addMarker( finishMarker );
-            System.out.println("### DEBUG FINISH ###  finish marker added");
-
-            InfoWindowOptions finishMarkerInfoWindowOptions = new InfoWindowOptions();
-            finishMarkerInfoWindowOptions.content("<h2>Finish Line</h2>");
-            InfoWindow finishMarkerInfoWindow = new InfoWindow(finishMarkerInfoWindowOptions);
-            finishMarkerInfoWindow.open(map, finishMarker);
-            System.out.println("### DEBUG FINISH ###  before centering&zoom");
-            //map.setCenter(latLong);
-
-        });
-        /*
-//finish address geocoding & putting marker on map
-        geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
-            LatLong latLong = null;
-
-            if( status == GeocoderStatus.ZERO_RESULTS) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching finish addresses found. Address is: " + route.getFinish());
-                alert.show();
-                return;
-            } else if( results.length > 1 ) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple finish addresses results found, showing the first one.");
-                alert.show();
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-            } else {
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
-            }
-//++TODO: private void addFinishMarker(startMarkerOptions, LatLong position, String infoWindowContent);
-            MarkerOptions finishMarkerOptions = new MarkerOptions();
-            finishMarkerOptions.position(latLong);
-            Marker finishMarker = new Marker(finishMarkerOptions);
-            map.addMarker( finishMarker );
-
-            InfoWindowOptions finishInfoWindowOptions = new InfoWindowOptions();
-            finishInfoWindowOptions.content("<h2>Finish Line</h2>");
-            //InfoWindow finishMarkerInfoWindow = new InfoWindow(finishInfoWindowOptions);
-            //finishMarkerInfoWindow.open(map, finishMarker);
-
-        });
-*/        
 //TODO: when SHOWMARKERS button pushed, geocode every marker from DB thats 
 //connected to this route
-                   
-        //TODO: onMapRightClick() ===> show MapContextMenu /addNewMarker(), what is here?---getGeoLocationInfo() + displayGeoLocationInfo(), centerMapHere(LatLong ll), +++addWaypointToRoute()/
-        //TODO: onMarkerRightClick() ===> show MarkerContextMenu /editMarker(), deleteMarker(), +++show streetView(), +++/
-        //TODO: onMarkerClick() ===> showMarkerInfoWindow();
-        //TODO: MenufejlÃ©c + HelpTextBox helpTextBox;
-        //TODO: ADD searchField + CenterMap()
-        
-            /* ADD MARKER EXAMPLE
-        MarkerOptions markerOptions5 = new MarkerOptions();
-        LatLong fredWilkieLocation = new LatLong(47.6597, -122.3357);
-        markerOptions5.position(fredWilkieLocation);
-        Marker fredWilkieMarker = new Marker(markerOptions5);
-        map.addMarker( fredWilkieMarker );
-        
-        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-        infoWindowOptions.content("<h2>Fred Wilkie</h2>"
-                                + "Current Location: Safeway<br>"
-                                + "ETA: 45 minutes" );
-        InfoWindow fredWilkeInfoWindow = new InfoWindow(infoWindowOptions);
-        fredWilkeInfoWindow.open(map, fredWilkieMarker);
-*/
+            
+            //TODO: onMapRightClick() ===> show MapContextMenu /addNewMarker(), what is here?---getGeoLocationInfo() + displayGeoLocationInfo(), centerMapHere(LatLong ll), +++addWaypointToRoute()/
+            //TODO: onMarkerRightClick() ===> show MarkerContextMenu /editMarker(), deleteMarker(), +++show streetView(), +++/
+            //TODO: onMarkerClick() ===> showMarkerInfoWindow();
+            //TODO: MenuHeader + HelpTextBox helpTextBox;
+            //DONE: ADD searchField + CenterMap()
     }
     
     @FXML
     public void addressTextFieldAction(ActionEvent event) {
         System.out.println("User wants to search!");
+        if (foundMarkerExists)
+            map.removeMarker(findMarker);
         
         geocodingService.geocode(addressToSearch.get(), (GeocodingResult[] results, GeocoderStatus status) -> {
             
@@ -228,8 +145,19 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
 
             map.setCenter(latLong);
             map.setZoom(17);
-            
-            
+//for curiousity, let's see wether this function can put a marker or not...
+            MarkerOptions findMarkerOptions = new MarkerOptions();
+            findMarkerOptions.position(latLong);
+            findMarker = new Marker(findMarkerOptions);
+            map.addMarker( findMarker );
+            foundMarkerExists = true;
+            System.out.println("### DEBUG FIND ###  marker added");
+
+            InfoWindowOptions findMarkerInfoWindowOptions = new InfoWindowOptions();
+            findMarkerInfoWindowOptions.content("<h2>Found " + addressToSearch.get() + " </h2>");
+            InfoWindow findMarkerInfoWindow = new InfoWindow(findMarkerInfoWindowOptions);
+            findMarkerInfoWindow.open(map, findMarker);
+            System.out.println("### DEBUG FIND ###  done about the marker...");
 
         });
         
@@ -244,10 +172,75 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     }
 
     
-    public void geocodePoint(String address) {
-            System.out.println("### DEBUG ### geocodePoint meghívva");
+    public void geocodeStart() {
+//        LatLong ll = new LatLong(47.516558,19.09047099999998);
+        
+        
+        geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
 
-        System.out.println("### DEBUG ### geocodePoint lambda után");
+            if( status == GeocoderStatus.ZERO_RESULTS) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getStart());
+                alert.show();
+                return;
+            } else if( results.length > 1 ) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
+                alert.show();
+                startLatLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            } else {
+                System.out.println("### DEBUG START 1) ### geocodePoint lambda ELSE ága");
+                startLatLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            }
+
+            
+//++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
+// put marker on map
+            System.out.println("### DEBUG START 2) ### put marker on map");
+            startMarkerOptions.position(startLatLong);
+            map.setCenter(startLatLong);
+            startMarker = new Marker(startMarkerOptions);
+            map.addMarker( startMarker );
+            System.out.println("### DEBUG START 3) ###  marker added, infowindow next");
+            startMarkerInfoWindow = new InfoWindow(startMarkerInfoWindowOptions);        
+            startMarkerInfoWindow.open(map, startMarker);
+            System.out.println("### DEBUG START 4) ###  put marker on map END");
+// put marker on map END
+        });
+
+        
+        
+    }
+    
+    public void geocodeFinish() {
+/*        geocodingService.geocode(route.getFinish(), (GeocodingResult[] resultsFinish, GeocoderStatus statusFinish) -> {
+            LatLong latLong = null;
+            if( statusFinish == GeocoderStatus.ZERO_RESULTS) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No matching finish address found. Address is: " + route.getFinish());
+                alert.show();
+                return;
+            } else if( resultsFinish.length > 1 ) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple finish address results found, showing the first one.");
+                alert.show();
+                latLong = new LatLong(resultsFinish[0].getGeometry().getLocation().getLatitude(), resultsFinish[0].getGeometry().getLocation().getLongitude());
+            } else {
+                System.out.println("### DEBUG FINISH 1) ### geocodePoint lambda ELSE ága");
+                latLong = new LatLong(resultsFinish[0].getGeometry().getLocation().getLatitude(), resultsFinish[0].getGeometry().getLocation().getLongitude());
+            }
+        });
+*/
+            LatLong ll = new LatLong(47.5041761,19.072502699999973);
+
+//++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
+//put marker on map
+            System.out.println("### DEBUG FINISH 2) ### put marker on map");
+            finishMarkerOptions.position(ll);
+            //map.setCenter(ll);
+            finishMarker = new Marker(finishMarkerOptions);
+            map.addMarker( finishMarker );
+            System.out.println("### DEBUG FINISH 3) ###  marker added");
+            finishMarkerInfoWindow = new InfoWindow(finishMarkerInfoWindowOptions);        
+            finishMarkerInfoWindow.open(map, finishMarker);
+            System.out.println("### DEBUG FINISH 4) ### put marker on map END");
+//put marker on map END
 
     }
 }
