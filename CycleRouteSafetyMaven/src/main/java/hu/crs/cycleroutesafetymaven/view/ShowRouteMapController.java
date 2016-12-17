@@ -107,8 +107,9 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
 
        
 //Lat: 47.5041761 Long: 19.072502699999973
-        geocodeStart();
-        geocodeFinish();
+
+            geocodeStart();
+            geocodeFinish();
 
 //TODO: when SHOWMARKERS button pushed, geocode every marker from DB thats 
 //connected to this route
