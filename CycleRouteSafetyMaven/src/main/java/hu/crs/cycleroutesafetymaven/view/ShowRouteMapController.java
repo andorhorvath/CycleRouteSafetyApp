@@ -10,6 +10,7 @@ import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import com.lynden.gmapsfx.javascript.object.Marker;
 import com.lynden.gmapsfx.javascript.object.MarkerOptions;
+import com.lynden.gmapsfx.service.directions.DirectionsServiceCallback;
 import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
 import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
 import com.lynden.gmapsfx.service.geocoding.GeocodingService;
@@ -24,6 +25,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 
 
 /**
@@ -31,7 +33,7 @@ import javafx.scene.control.TextField;
  * @author ahorvath
  * According to the example code.
  */
-public class ShowRouteMapController implements Initializable, MapComponentInitializedListener {
+public class ShowRouteMapController implements Initializable, MapComponentInitializedListener, DirectionsServiceCallback  {
     
     @FXML
     private GoogleMapView mapView;
@@ -43,6 +45,8 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     private Button startButton;
     @FXML
     private Button finishButton;
+    @FXML
+    private Button routeButton;
     
     private GoogleMap map;
     private GeocodingService geocodingService;
@@ -50,8 +54,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     
     private Route route;
     private Boolean foundMarkerExists;
-    private LatLong startLatLong;
-    private LatLong finishLatLong;
+
     
     private MarkerOptions startMarkerOptions;
     private Marker startMarker;
@@ -64,6 +67,9 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     private InfoWindow finishMarkerInfoWindow;
     
     private Marker findMarker;
+    
+//    @FXML
+//    private VBox vbox;
     /**
      * set the MapViewÃ¢â‚¬â„¢s initialization listener to the FXMLController as well
      * as bind the address property to the address TextFieldÃ¢â‚¬â„¢s text property.
@@ -77,6 +83,10 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         addressToSearch.bind(addressTextField.textProperty());
 
         foundMarkerExists = false;
+//        vbox = new VBox(8); // spacing = 8
+//        vbox.getChildren().addAll(startButton, finishButton, new Button("Paste"));
+
+        
     }    
 
     @Override
@@ -97,6 +107,9 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                    
         map = mapView.createMap(mapOptions);
         
+        directionsService = new DirectionsService();
+        directionsPane = mapView.getDirec();
+
         startMarkerOptions = new MarkerOptions();
         startMarkerInfoWindowOptions = new InfoWindowOptions();
         startMarkerInfoWindowOptions.content("<h2>Start point</h2>");
@@ -105,11 +118,8 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         finishMarkerInfoWindowOptions = new InfoWindowOptions();
         finishMarkerInfoWindowOptions.content("<h2>Finish line</h2>");
 
-       
+        computeAndDrawRoute(route.getStart(), route.getFinish());
 //Lat: 47.5041761 Long: 19.072502699999973
-
-            geocodeStart();
-            geocodeFinish();
 
 //TODO: when SHOWMARKERS button pushed, geocode every marker from DB thats 
 //connected to this route
@@ -142,22 +152,19 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             } else {
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             }
-
             map.setCenter(latLong);
             map.setZoom(17);
-//for curiousity, let's see wether this function can put a marker or not...
+
             MarkerOptions findMarkerOptions = new MarkerOptions();
             findMarkerOptions.position(latLong);
             findMarker = new Marker(findMarkerOptions);
             map.addMarker( findMarker );
             foundMarkerExists = true;
-            System.out.println("### DEBUG FIND ###  marker added");
 
             InfoWindowOptions findMarkerInfoWindowOptions = new InfoWindowOptions();
             findMarkerInfoWindowOptions.content("<h2>Found " + addressToSearch.get() + " </h2>");
             InfoWindow findMarkerInfoWindow = new InfoWindow(findMarkerInfoWindowOptions);
             findMarkerInfoWindow.open(map, findMarker);
-            System.out.println("### DEBUG FIND ###  done about the marker...");
 
         });
         
@@ -171,13 +178,13 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         this.route = route;
     }
 
-    
+    @FXML
     public void geocodeStart() {
 //        LatLong ll = new LatLong(47.516558,19.09047099999998);
         
         
-        geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
-
+        geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
+            //System.out.println("start is: " + route.getFinish());
             if( status == GeocoderStatus.ZERO_RESULTS) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getStart());
                 alert.show();
@@ -191,7 +198,6 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 startLatLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             }
 
-            
 //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
 // put marker on map
             System.out.println("### DEBUG START 2) ### put marker on map");
@@ -205,13 +211,11 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             System.out.println("### DEBUG START 4) ###  put marker on map END");
 // put marker on map END
         });
-
-        
-        
     }
     
+    @FXML
     public void geocodeFinish() {
-/*        geocodingService.geocode(route.getFinish(), (GeocodingResult[] resultsFinish, GeocoderStatus statusFinish) -> {
+        geocodingService.geocode(route.getFinish(), (GeocodingResult[] resultsFinish, GeocoderStatus statusFinish) -> {
             LatLong latLong = null;
             if( statusFinish == GeocoderStatus.ZERO_RESULTS) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "No matching finish address found. Address is: " + route.getFinish());
@@ -225,14 +229,10 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
                 System.out.println("### DEBUG FINISH 1) ### geocodePoint lambda ELSE ága");
                 latLong = new LatLong(resultsFinish[0].getGeometry().getLocation().getLatitude(), resultsFinish[0].getGeometry().getLocation().getLongitude());
             }
-        });
-*/
-            LatLong ll = new LatLong(47.5041761,19.072502699999973);
 
-//++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
 //put marker on map
             System.out.println("### DEBUG FINISH 2) ### put marker on map");
-            finishMarkerOptions.position(ll);
+            finishMarkerOptions.position(latLong);
             //map.setCenter(ll);
             finishMarker = new Marker(finishMarkerOptions);
             map.addMarker( finishMarker );
@@ -241,6 +241,12 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             finishMarkerInfoWindow.open(map, finishMarker);
             System.out.println("### DEBUG FINISH 4) ### put marker on map END");
 //put marker on map END
-
+        });
+    }
+    
+    @FXML
+    void computeAndDrawRoute(String startPoint, String finishLine) {
+        DirectionsRequest request = new DirectionsRequest(startPoint, finishLine, TravelModes.DRIVING);
+        directionsService.getRoute(request, this, new DirectionsRenderer(true, mapView.getMap(), directionsPane));
     }
 }
