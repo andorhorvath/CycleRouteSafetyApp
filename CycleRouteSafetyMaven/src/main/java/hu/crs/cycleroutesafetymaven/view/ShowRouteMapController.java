@@ -14,6 +14,7 @@ import com.lynden.gmapsfx.javascript.object.MarkerOptions;
 import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
 import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
 import com.lynden.gmapsfx.service.geocoding.GeocodingService;
+import com.lynden.gmapsfx.service.geocoding.GeocodingServiceCallback;
 import hu.crs.cycleroutesafetymaven.model.Route;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -118,8 +119,10 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
 
         });
         
-        
-        geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
+        GeocodingServiceCallback callback = null;
+        GeocoderStatus status = null;
+        GeocodingResult[] results = null;
+        geocodingService.geocode(route.getFinish(), callback); 
             LatLong latLong = null;
             if( status == GeocoderStatus.ZERO_RESULTS) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getFinish());
@@ -151,7 +154,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             System.out.println("### DEBUG FINISH ###  before centering&zoom");
             //map.setCenter(latLong);
 
-        });
+//        });
         /*
 //finish address geocoding & putting marker on map
         geocodingService.geocode(route.getFinish(), (GeocodingResult[] results, GeocoderStatus status) -> {
