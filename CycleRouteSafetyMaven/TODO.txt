@@ -1,0 +1,59 @@
+TODO:
+DB
+- insert into new object
+  - new Route that the user defines
+  - new POI
+- edit existing Route (while at mapView)
+- edit existing POI (while at mapView)
+
+MAP
+- remembering route from A to B
+- right panel w A/B information, onClick(): center map & show A/B infowindow, ++startMarker?
+
+1) move the RouteList to the mapView
+- left panel of routes; onClick(): change to that route, save/discard edits on current mapView
+- top panel: FIle/Edit/About menu, duplicate the functions there, newMarker
+2) make two windowed, one for the list of maps, second for the mapView
+
+- show selected Route on map
+  - save it's waypoints, to DB	=> possible since it will still be a GoogleMap generation count!
+  - save editet waypoint list if route is modified
+  - clear modifications / back to default
+  - saveMapChangesButton => Markers, Route, everything
+  - saveMapChangesMenu (topMenu)
+
+- POI management
+  - display list of POIs of selected route (right panel); w start/finish
+  - onClick(): 
+    - centerMap, 
+    - open infoWindow,
+    - getGeocoding if firstClick, save to DB AT THAT TIME!
+    - +++makeStreetViewPossible in that place
+  - edit POIs onLeftClick(): contextMenu	: edit/delete
+  - delete POIs	-II-
+  - edit/delete POIs onRightClick() on map: contextMenu (edit,delete)
+  - ONMAPrightClick: contextMenu: addNewMarker/what's here/centerHere
+  - +++POI onRightClick => contextMenu -> move to new position (glow, click where it goes) OR drag that marker
+
+- TOP menu on map
+  - newMarker(), onClick display "click where you want to place it on the map"
+
+- Helper textBox
+  - contextual help messages(?)
+  - tooltip help messages
+  - top panel: Help
+
+STYLEING
+- inMapBackgrounds are "áttetsző feketék" VBox ? =]
+
+DB&SECURITY
+- user management, "my routes" editable, "other routes" read-only
+- single-sing-on
+- DB connection pools
+- put DB online (amazon cloud?)
+- javaEE application server?
+- DB connection and definiton file (config file for client)
+
+DISTRIBUTION
+- how will I distribute on the CD?
+- how will I display it in firefox/chrome/IE10, if embedded java is a no-no?

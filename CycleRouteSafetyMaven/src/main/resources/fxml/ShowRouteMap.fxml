@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import com.lynden.gmapsfx.*?>
 
 <AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.crs.cycleroutesafetymaven.view.ShowRouteMapController">
     <children>        
