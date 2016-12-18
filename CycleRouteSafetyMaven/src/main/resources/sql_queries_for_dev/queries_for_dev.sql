@@ -18,3 +18,14 @@ INSERT INTO cycleroutes.routes (`routeName`, author, `startPoint`, `finishPoint`
 # ALTER TABLE Routes DROP lastUpdateTime;
 ALTER TABLE Routes ADD plannedRoute BOOLEAN;
 # ALTER TABLE cycleroutes.routes ADD UNIQUE (routeName);
+
+# INSERT data to POIS table
+select * from pois;
+
+INSERT INTO pois
+( routeID, poiType, Lat, Lon, planned )
+VALUES
+( 3, 'finish',null, null, false );
+
+ALTER TABLE pois DROP isAlreadyPlanned;
+ALTER TABLE pois ADD isAlreadyPlanned BOOLEAN DEFAULT false;

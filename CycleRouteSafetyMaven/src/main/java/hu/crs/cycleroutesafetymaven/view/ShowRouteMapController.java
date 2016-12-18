@@ -2,6 +2,7 @@ package hu.crs.cycleroutesafetymaven.view;
 
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
+import com.lynden.gmapsfx.javascript.object.DirectionsPane;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.InfoWindow;
 import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
@@ -10,7 +11,7 @@ import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import com.lynden.gmapsfx.javascript.object.Marker;
 import com.lynden.gmapsfx.javascript.object.MarkerOptions;
-import com.lynden.gmapsfx.service.directions.DirectionsServiceCallback;
+import com.lynden.gmapsfx.service.directions.*;
 import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
 import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
 import com.lynden.gmapsfx.service.geocoding.GeocodingService;
@@ -51,10 +52,13 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     private GoogleMap map;
     private GeocodingService geocodingService;
     private final StringProperty addressToSearch = new SimpleStringProperty();
+    protected DirectionsService directionsService;
+    protected DirectionsPane directionsPane;
     
     private Route route;
     private Boolean foundMarkerExists;
-
+    private LatLong startLatLong;
+    private LatLong finishLatLong;
     
     private MarkerOptions startMarkerOptions;
     private Marker startMarker;
@@ -85,10 +89,12 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         foundMarkerExists = false;
 //        vbox = new VBox(8); // spacing = 8
 //        vbox.getChildren().addAll(startButton, finishButton, new Button("Paste"));
-
-        
     }    
-
+    
+    @Override
+    public void directionsReceived(DirectionsResult results, DirectionStatus status) {
+    }
+    
     @Override
     public void mapInitialized() {
         geocodingService = new GeocodingService();
@@ -118,7 +124,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         finishMarkerInfoWindowOptions = new InfoWindowOptions();
         finishMarkerInfoWindowOptions.content("<h2>Finish line</h2>");
 
-        computeAndDrawRoute(route.getStart(), route.getFinish());
+        //computeAndDrawRoute();
 //Lat: 47.5041761 Long: 19.072502699999973
 
 //TODO: when SHOWMARKERS button pushed, geocode every marker from DB thats 
@@ -185,6 +191,8 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         
         geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
             //System.out.println("start is: " + route.getFinish());
+            LatLong ll = null;
+            System.out.print("route getStart is : " + route.getStart());
             if( status == GeocoderStatus.ZERO_RESULTS) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "No matching start address found. Address is: " + route.getStart());
                 alert.show();
@@ -192,17 +200,18 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
             } else if( results.length > 1 ) {
                 Alert alert = new Alert(Alert.AlertType.WARNING, "Multiple start address results found, showing the first one.");
                 alert.show();
-                startLatLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+                ll = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             } else {
                 System.out.println("### DEBUG START 1) ### geocodePoint lambda ELSE ága");
-                startLatLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+                ll = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             }
 
+            
 //++TODO: private void addStartMarker(startMarkerOptions, LatLong position, String infoWindowContent);
 // put marker on map
             System.out.println("### DEBUG START 2) ### put marker on map");
-            startMarkerOptions.position(startLatLong);
-            map.setCenter(startLatLong);
+            startMarkerOptions.position(ll);
+            map.setCenter(ll);
             startMarker = new Marker(startMarkerOptions);
             map.addMarker( startMarker );
             System.out.println("### DEBUG START 3) ###  marker added, infowindow next");
@@ -245,8 +254,10 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     }
     
     @FXML
-    void computeAndDrawRoute(String startPoint, String finishLine) {
-        DirectionsRequest request = new DirectionsRequest(startPoint, finishLine, TravelModes.DRIVING);
+    public void computeAndDrawRoute() {
+        DirectionsRequest request = new DirectionsRequest(route.getStart(), route.getFinish(), TravelModes.DRIVING);
+
         directionsService.getRoute(request, this, new DirectionsRenderer(true, mapView.getMap(), directionsPane));
+        
     }
 }

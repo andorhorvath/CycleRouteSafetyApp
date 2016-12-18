@@ -1,5 +1,6 @@
 package hu.crs.cycleroutesafetymaven.model;
 
+import com.lynden.gmapsfx.javascript.object.LatLong;
 import java.util.Date;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -9,6 +10,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import hu.crs.cycleroutesafetymaven.model.PointOfInterest;
 
 /**
  * Model class for a Route.
@@ -17,13 +19,15 @@ import javafx.beans.property.StringProperty;
  */
 public class Route {
 
-    private final StringProperty name;
+    private final StringProperty name;  //uniq
     private final StringProperty author;
-    private final StringProperty start;
-    private final StringProperty finish;
+    private final PointOfInterest start;
+    private final PointOfInterest finish;
     private final IntegerProperty length;
     private final ObjectProperty<Date> lastUpdateTime;
-    private final BooleanProperty isDirectionsUsed;
+    private final BooleanProperty isAlreadyPlanned;
+    
+    
 
 
     /**
@@ -38,20 +42,21 @@ public class Route {
      * 
      * @param name
      * @param author
-     * @param start
-     * @param finish
+     * @param startAddress
+     * @param finishAddress
      * @param length
      * @param lastUpdateTime
+     * @param isAlreadyPlanned
      */
-    public Route(String name, String author, String start, String finish, Integer length, Date lastUpdateTime, Boolean isDirectionsUsed) {
+    public Route(String name, String author, String startAddress, String finishAddress, Integer length, Date lastUpdateTime, Boolean isAlreadyPlanned) {
         this.name = new SimpleStringProperty(name);
         this.author = new SimpleStringProperty(author);
-        this.start = new SimpleStringProperty(start);
-        this.finish = new SimpleStringProperty(finish);
+        this.start = new PointOfInterest(name, "start", startAddress);
+        this.finish = new PointOfInterest(name, "finish", finishAddress);
         
         this.length = new SimpleIntegerProperty(length);
         this.lastUpdateTime = new SimpleObjectProperty<>(lastUpdateTime);
-        this.isDirectionsUsed = new SimpleBooleanProperty(isDirectionsUsed);
+        this.isAlreadyPlanned = new SimpleBooleanProperty(isAlreadyPlanned);
     }
 
     public String getName() {
@@ -78,16 +83,18 @@ public class Route {
         return author;
     }
 
-    public String getStart() {
-        return start.get();
+    public PointOfInterest getStart() {
+        return this.start;
     }
 
     public void setStart(String street) {
-        this.start.set(street);
+        this.start.setAddressText(street);
+        
+        
     }
 
-    public StringProperty startProperty() {
-        return start;
+    public StringProperty getStartProperty() {
+        return this.start.getTextContent();
     }
 
     public int getLength() {
@@ -127,10 +134,10 @@ public class Route {
     }
     
     public void setIsDirectionsUsed(Boolean newIsDirectionsUsed) {
-        this.isDirectionsUsed.set(newIsDirectionsUsed);
+        this.isAlreadyPlanned.set(newIsDirectionsUsed);
     }
     
     public BooleanProperty getIsDirectionsUsed() {
-        return isDirectionsUsed;
+        return isAlreadyPlanned;
     }
 }
