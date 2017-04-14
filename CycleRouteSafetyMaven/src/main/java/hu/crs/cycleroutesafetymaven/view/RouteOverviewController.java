@@ -83,9 +83,9 @@ public class RouteOverviewController {
             // Fill the labels with info from the route object.
             nameLabel.setText(route.getName());
             authorLabel.setText(route.getAuthor());
-            startLabel.setText(route.getStart());
+            startLabel.setText(route.getStart().getAddressText());
             lengthLabel.setText(Integer.toString(route.getLength()));
-            finishLabel.setText(route.getFinish());
+            finishLabel.setText(route.getFinish().getAddressText());
 
 //DateUtil-el            lastUpdateTimeLabel.setText(DateUtil.format(route.getLastUpdateTime()));
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

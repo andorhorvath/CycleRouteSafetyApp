@@ -189,7 +189,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
 //        LatLong ll = new LatLong(47.516558,19.09047099999998);
         
         
-        geocodingService.geocode(route.getStart(), (GeocodingResult[] results, GeocoderStatus status) -> {
+        geocodingService.geocode(route.getStart().getAddressText(), (GeocodingResult[] results, GeocoderStatus status) -> {
             //System.out.println("start is: " + route.getFinish());
             LatLong ll = null;
             System.out.print("route getStart is : " + route.getStart());
@@ -224,7 +224,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     
     @FXML
     public void geocodeFinish() {
-        geocodingService.geocode(route.getFinish(), (GeocodingResult[] resultsFinish, GeocoderStatus statusFinish) -> {
+        geocodingService.geocode(route.getFinish().getAddressText(), (GeocodingResult[] resultsFinish, GeocoderStatus statusFinish) -> {
             LatLong latLong = null;
             if( statusFinish == GeocoderStatus.ZERO_RESULTS) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "No matching finish address found. Address is: " + route.getFinish());
@@ -255,7 +255,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     
     @FXML
     public void computeAndDrawRoute() {
-        DirectionsRequest request = new DirectionsRequest(route.getStart(), route.getFinish(), TravelModes.DRIVING);
+        DirectionsRequest request = new DirectionsRequest(route.getStart().getAddressText(), route.getFinish().getAddressText(), TravelModes.DRIVING);
 
         directionsService.getRoute(request, this, new DirectionsRenderer(true, mapView.getMap(), directionsPane));
         

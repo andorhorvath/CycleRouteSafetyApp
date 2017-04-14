@@ -10,7 +10,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import hu.crs.cycleroutesafetymaven.model.PointOfInterest;
 
 /**
  * Model class for a Route.
@@ -84,17 +83,22 @@ public class Route {
     }
 
     public PointOfInterest getStart() {
-        return this.start;
+        return start;
     }
 
-    public void setStart(String street) {
-        this.start.setAddressText(street);
-        
-        
+    public void setStart(PointOfInterest newStart) {
+        //ha akarom majd figyelni, akkor ezeket cserélni kell a Property-kre
+        this.finish.setAddressText(newStart.getAddressText());
+        this.finish.setLat(newStart.getLat());
+        this.finish.setLon(newStart.getLon());
+        this.finish.setPoiId(newStart.getPoiId());
+        this.finish.setPoiType(newStart.getPoiType());
+        this.finish.setRouteName(newStart.getRouteName());
+        this.finish.setTextContent(newStart.getTextContent());
     }
 
     public StringProperty getStartProperty() {
-        return this.start.getTextContent();
+        return this.start.addressTextProperty();
     }
 
     public int getLength() {
@@ -109,16 +113,19 @@ public class Route {
         return length;
     }
 
-    public String getFinish() {
-        return finish.get();
-    }
-
-    public void setFinish(String newFinish) {
-        this.finish.set(newFinish);
-    }
-
-    public StringProperty finishProperty() {
+    public PointOfInterest getFinish() {
         return finish;
+    }
+
+    public void setFinish(PointOfInterest newFinish) {
+        //ha akarom majd figyelni, akkor ezeket cserélni kell a Property-kre
+        this.finish.setAddressText(newFinish.getAddressText());
+        this.finish.setLat(newFinish.getLat());
+        this.finish.setLon(newFinish.getLon());
+        this.finish.setPoiId(newFinish.getPoiId());
+        this.finish.setPoiType(newFinish.getPoiType());
+        this.finish.setRouteName(newFinish.getRouteName());
+        this.finish.setTextContent(newFinish.getTextContent());
     }
 
     public Date getLastUpdateTime() {

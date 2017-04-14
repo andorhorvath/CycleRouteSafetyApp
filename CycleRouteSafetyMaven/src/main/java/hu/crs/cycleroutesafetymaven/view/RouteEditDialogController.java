@@ -65,8 +65,8 @@ public class RouteEditDialogController {
 
         nameField.setText(route.getName());
         authorField.setText(route.getAuthor());
-        startField.setText(route.getStart());
-        finishField.setText(route.getFinish());
+        startField.setText(route.getStart().getAddressText());
+        finishField.setText(route.getFinish().getAddressText());       // ennek ugyanolyannak kéne lennie mint a startFieldes....
         lengthField.setText(Integer.toString(route.getLength()));
         
 //DateUtil-el        lastUpdateTimeField.setText(DateUtil.format(route.getLastUpdateTime()));
@@ -92,8 +92,9 @@ public class RouteEditDialogController {
         if (isInputValid()) {
             route.setName(nameField.getText());
             route.setAuthor(authorField.getText());
-            route.setStart(startField.getText());
-            route.setFinish(finishField.getText());
+// TODO: itt kéne a megadott szöveg alapján egy POI objektumot meghatározni, és azt set-elni start-nak és célnak is...            
+            //route.setStart(startField.getText());
+            //route.setFinish(finishField.getText());
             route.setLength(Integer.parseInt(lengthField.getText()));
             
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

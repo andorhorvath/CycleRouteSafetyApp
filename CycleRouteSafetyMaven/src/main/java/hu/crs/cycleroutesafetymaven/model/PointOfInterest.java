@@ -19,8 +19,8 @@ public class PointOfInterest {
     private StringProperty routeName;
     private StringProperty addressText;
     private StringProperty poiType;
-    private DoubleProperty Lat;
-    private DoubleProperty Lon;
+    private DoubleProperty lat;
+    private DoubleProperty lon;
     private BooleanProperty isAlreadyPlanned;
     private StringProperty textContent;
     
@@ -31,8 +31,8 @@ public class PointOfInterest {
         this.routeName.setValue(routeName);
         this.poiType.setValue(poiType);
         this.addressText.setValue(pointAddressText);
-        this.Lat.setValue(null);                //unnecessary, since DB has default value false
-        this.Lon.setValue(null);                //unnecessary, since DB has default value false
+        this.lat.setValue(null);                //unnecessary, since DB has default value false
+        this.lon.setValue(null);                //unnecessary, since DB has default value false
         this.isAlreadyPlanned.setValue(false);  //unnecessary, since DB has default value false
         this.textContent.setValue("");
     }
@@ -41,8 +41,8 @@ public class PointOfInterest {
         this.routeName.setValue(routeName);
         this.poiType.setValue(poiType);
         this.addressText.setValue(addressText);
-        this.Lat.setValue(lat);
-        this.Lon.setValue(lon);
+        this.lat.setValue(lat);
+        this.lon.setValue(lon);
         this.isAlreadyPlanned.setValue(isAlreadyPlanned);
         this.textContent.setValue(textContent);
     }
@@ -63,14 +63,14 @@ public class PointOfInterest {
         this.routeName.setValue(routeName);
     }
 
-    public String getAddressText() {
-        return addressText.getValue();
+    public final String getAddressText() {
+        return addressText.get();
     }
 
     public void setAddressText(String addressText) {
         this.addressText.setValue(addressText);
     }
-
+    
     public String getPoiType() {
         return poiType.getValue();
     }
@@ -80,19 +80,19 @@ public class PointOfInterest {
     }
 
     public Double getLat() {
-        return Lat.getValue();
+        return lat.getValue();
     }
 
     public void setLat(Double lat) {
-        this.Lat.setValue(lat);
+        this.lat.setValue(lat);
     }
 
     public Double getLon() {
-        return Lon.getValue();
+        return lon.getValue();
     }
 
     public void setLon(Double lon) {
-        this.Lon.setValue(lon);
+        this.lon.setValue(lon);
     }
 
     public Boolean getIsAlreadyPlanned() {
@@ -111,5 +111,35 @@ public class PointOfInterest {
         this.textContent.setValue(textContent);
     }
 
+    public IntegerProperty poiId() {
+        return poiId;
+    }
+    
+    public StringProperty addressTextProperty() {
+        return addressText;
+    }
 
+    public StringProperty routeName() {
+        return routeName;
+    }
+    
+    public StringProperty poiType() {
+        return poiType;
+    }
+    
+    public DoubleProperty lat() {
+        return lat;
+    }
+    
+    public DoubleProperty lon() {
+        return lon;
+    }
+    
+    public BooleanProperty isAlreadyPlanned() {
+        return isAlreadyPlanned;
+    }
+    
+    public StringProperty textContent() {
+        return textContent;
+    }
 }
