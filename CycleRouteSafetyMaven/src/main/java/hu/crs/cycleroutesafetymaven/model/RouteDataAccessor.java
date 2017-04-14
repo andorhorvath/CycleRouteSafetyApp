@@ -51,6 +51,7 @@ public class RouteDataAccessor {
                 Date lastUpdateTime = lastUpdateTimeStamp;
                 Boolean isDirectionsUsed = resultSet.getBoolean("plannedRoute");
                 
+                System.out.println("######## DEBUG ########### routeName is : " + name);
                 Route route = new Route(name, author, start, finish, length, lastUpdateTime, isDirectionsUsed);
                 routeList.add(route);
             }

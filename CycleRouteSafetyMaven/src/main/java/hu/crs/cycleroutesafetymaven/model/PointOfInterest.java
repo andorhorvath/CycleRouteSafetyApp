@@ -8,6 +8,10 @@ package hu.crs.cycleroutesafetymaven.model;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 /**
@@ -15,36 +19,39 @@ import javafx.beans.property.StringProperty;
  * @author ahorvath
  */
 public class PointOfInterest {
-    private IntegerProperty poiId;
-    private StringProperty routeName;
-    private StringProperty addressText;
-    private StringProperty poiType;
-    private DoubleProperty lat;
-    private DoubleProperty lon;
-    private BooleanProperty isAlreadyPlanned;
-    private StringProperty textContent;
+    private final IntegerProperty poiId;    // we will see whether I need this or not at all
+    private final StringProperty routeName;
+    private final StringProperty addressText;
+    private final StringProperty poiType;
+    private final DoubleProperty lat;
+    private final DoubleProperty lon;
+    private final BooleanProperty isAlreadyPlanned;
+    private final StringProperty textContent;
     
     public PointOfInterest() {
+        this(null, null, null);
     }
     
-    public PointOfInterest(String routeName, String poiType, String pointAddressText) {
-        this.routeName.setValue(routeName);
-        this.poiType.setValue(poiType);
-        this.addressText.setValue(pointAddressText);
-        this.lat.setValue(null);                //unnecessary, since DB has default value false
-        this.lon.setValue(null);                //unnecessary, since DB has default value false
-        this.isAlreadyPlanned.setValue(false);  //unnecessary, since DB has default value false
-        this.textContent.setValue("");
+    public PointOfInterest(String routeName, String poiType, String addressText) {
+        this.poiId = new SimpleIntegerProperty();
+        this.routeName = new SimpleStringProperty(routeName);
+        this.poiType = new SimpleStringProperty(poiType);
+        this.addressText = new SimpleStringProperty(addressText);
+        this.lat = new SimpleDoubleProperty();                //unnecessary, since DB has default value false
+        this.lon = new SimpleDoubleProperty();                //unnecessary, since DB has default value false
+        this.isAlreadyPlanned = new SimpleBooleanProperty(false);  //unnecessary, since DB has default value false
+        this.textContent = new SimpleStringProperty();
     }
     
-    public PointOfInterest(String routeName, String poiType, String addressText, Double lat, Double lon, boolean isAlreadyPlanned, String textContent) {
-        this.routeName.setValue(routeName);
-        this.poiType.setValue(poiType);
-        this.addressText.setValue(addressText);
-        this.lat.setValue(lat);
-        this.lon.setValue(lon);
-        this.isAlreadyPlanned.setValue(isAlreadyPlanned);
-        this.textContent.setValue(textContent);
+    public PointOfInterest(String routeName, String poiType, String addressText, Double lat, Double lon, Boolean isAlreadyPlanned, String textContent) {
+        this.poiId = new SimpleIntegerProperty();
+        this.routeName = new SimpleStringProperty(routeName);
+        this.poiType = new SimpleStringProperty(poiType);
+        this.addressText = new SimpleStringProperty(addressText);
+        this.lat = new SimpleDoubleProperty(lat);                //unnecessary, since DB has default value false
+        this.lon = new SimpleDoubleProperty(lon);                //unnecessary, since DB has default value false
+        this.isAlreadyPlanned = new SimpleBooleanProperty(isAlreadyPlanned);  //unnecessary, since DB has default value false
+        this.textContent = new SimpleStringProperty(textContent);
     }
 
     public Integer getPoiId() {
