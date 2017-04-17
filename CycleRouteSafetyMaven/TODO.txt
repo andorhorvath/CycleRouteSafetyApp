@@ -8,7 +8,8 @@ DB
 
 MAP
 - remembering route from A to B
-- right panel w A/B information, onClick(): center map & show A/B infowindow, ++startMarker?
+- right panel w A/B information
+  - onClick(): center map & show A/B infowindow, ++startMarker?
 
 1) move the RouteList to the mapView
 - left panel of routes; onClick(): change to that route, save/discard edits on current mapView
@@ -49,11 +50,17 @@ STYLEING
 DB&SECURITY
 - user management, "my routes" editable, "other routes" read-only
 - single-sing-on
-- DB connection pools
-- put DB online (amazon cloud?)
+DONE - DB connection pools
+DONE on linux - put DB online (amazon cloud?)
 - javaEE application server?
 - DB connection and definiton file (config file for client)
 
 DISTRIBUTION
-- how will I distribute on the CD?
+PARTLY	- how will I distribute on the CD?
+	<<docker clients,
+	<<docker machine images
+		<<DB server,
+		<<TOMCAT server installed .jar
+		<<codebase separately too
 - how will I display it in firefox/chrome/IE10, if embedded java is a no-no?
+	<< TOMCAT server w installed jar

@@ -54,7 +54,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws SQLException, ClassNotFoundException {
         //TODO: ask into the DB w the user that is accessing the APP after login ofc...
-        dataAccessor = new RouteDataAccessor("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost:3306/cycleroutes?zeroDateTimeBehavior=convertToNull", "ahorvath", "A\"brakadabra87");
+        dataAccessor = new RouteDataAccessor("com.mysql.cj.jdbc.Driver", "jdbc:mysql://192.168.0.6:6603/cycleroutes?zeroDateTimeBehavior=convertToNull", "root", "1qa2ws3ed");
         try {
             
             routeData.addAll(dataAccessor.getRouteList());

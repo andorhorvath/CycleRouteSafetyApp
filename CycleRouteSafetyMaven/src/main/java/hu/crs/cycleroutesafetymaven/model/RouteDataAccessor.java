@@ -38,7 +38,7 @@ public class RouteDataAccessor {
     public List<Route> getRouteList() throws SQLException {
         try (
             Statement stmnt = connection.createStatement();
-            ResultSet resultSet = stmnt.executeQuery("select * from routes");
+            ResultSet resultSet = stmnt.executeQuery("select * from Routes");
         ){
             List<Route> routeList = new ArrayList<>();
             while (resultSet.next()) {
