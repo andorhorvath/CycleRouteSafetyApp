@@ -7,6 +7,46 @@ DB
 - edit existing POI (while at mapView)
 
 MAP
+- put given marker to my position ~hazard report
+  - get my position
+  - add icon selection
+
+Marker
+  - MarkerOptions
+    - position: LatLong
+	- title: Sting
+	- visible: Boolean
+	- icon: String (path to file)
+	- animation: Animation
+
+    private MarkerOptions startMarkerOptions;
+    private Marker startMarker;
+    private InfoWindowOptions startMarkerInfoWindowOptions;
+    private InfoWindow startMarkerInfoWindow;
+	
+	    startMarkerOptions = new MarkerOptions();
+        startMarkerInfoWindowOptions = new InfoWindowOptions();
+        startMarkerInfoWindowOptions.content("<h2>Start point</h2>");
+
+		
+MarkerOptions findMarkerOptions = new MarkerOptions();
+findMarkerOptions.position(latLong);
+
+findMarker = new Marker(findMarkerOptions);
+map.addMarker( findMarker );
+
+InfoWindowOptions findMarkerInfoWindowOptions = new InfoWindowOptions();
+findMarkerInfoWindowOptions.content("<h2>Found " + addressToSearch.get() + " </h2>");
+InfoWindow findMarkerInfoWindow = new InfoWindow(findMarkerInfoWindowOptions);
+findMarkerInfoWindow.open(map, findMarker);
+	
+- útvonal mentén lévőket (string search?), 
+  - csatolható útvonalhoz manuálisan?
+- kerületben lévőket (cím alapján szűrve)
+- 
+
+
+
 - remembering route from A to B
 - right panel w A/B information
   - onClick(): center map & show A/B infowindow, ++startMarker?
@@ -39,6 +79,8 @@ MAP
 - TOP menu on map
   - newMarker(), onClick display "click where you want to place it on the map"
 
+  
+  
 - Helper textBox
   - contextual help messages(?)
   - tooltip help messages
@@ -59,7 +101,10 @@ DISTRIBUTION
 PARTLY	- how will I distribute on the CD?
 	<<docker clients,
 	<<docker machine images
-		<<DB server,
+		<<DB server
+mysql latest-ből create container && apt-get update && apt-get install nano && nano .my.cnf...
+NEM IS! a DB create parancsban legyen benne, hogy UTF-8 
+
 		<<TOMCAT server installed .jar
 		<<codebase separately too
 - how will I display it in firefox/chrome/IE10, if embedded java is a no-no?
