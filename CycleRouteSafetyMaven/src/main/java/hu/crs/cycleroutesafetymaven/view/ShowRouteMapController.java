@@ -54,6 +54,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     
     private GoogleMap map;
     private GeocodingService geocodingService;
+    private GeocodingService geocodingService2;
     private final StringProperty addressToSearch = new SimpleStringProperty();
     protected DirectionsService directionsService;
     protected DirectionsPane directionsPane;
@@ -101,6 +102,7 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
     @Override
     public void mapInitialized() {
         geocodingService = new GeocodingService();
+        geocodingService2 = new GeocodingService();
            
         MapOptions mapOptions = new MapOptions();
 
@@ -119,6 +121,12 @@ public class ShowRouteMapController implements Initializable, MapComponentInitia
         directionsPane = mapView.getDirec();
 
         computeAndDrawRoute();
+        
+        System.out.println("+++ DEBUG MAIN-1) draw complete");
+        geocodeStart();
+        System.out.println("+++ DEBUG MAIN-2) geocodeStart() DONE");
+        geocodeFinish();
+        System.out.println("+++ DEBUG MAIN-3) geocodeFINISH() DONE");
         /* itt kell inicializálni a MAP-et:
 MANUAL...        - put startPOI
 MANUAL...        - put finishPOI
@@ -294,7 +302,7 @@ MANUAL...        - put finishPOI
     
     @FXML
     public void geocodeFinish() {
-        geocodingService.geocode(route.getFinish().getAddressText(), (GeocodingResult[] resultsFinish, GeocoderStatus statusFinish) -> {
+        geocodingService2.geocode(route.getFinish().getAddressText(), (GeocodingResult[] resultsFinish, GeocoderStatus statusFinish) -> {
             LatLong latLong = null;
             if( statusFinish == GeocoderStatus.ZERO_RESULTS) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "No matching finish address found. Address is: " + route.getFinish());
